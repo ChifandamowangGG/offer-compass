@@ -62,7 +62,7 @@ onMounted(load)
 </script>
 <template>
   <div class="admin-panel">
-    <h2>🛡️ 审核管理中心</h2>
+    <h2>审核管理中心</h2>
     <div class="admin-tabs">
       <button class="nav-tab" :class="{ active: tab === 'pending' }" @click="tab='pending'">
         待审核 ({{ pendingJobs.length }})
@@ -88,18 +88,18 @@ onMounted(load)
           <div>
             <div class="admin-card-title">{{ job.title }} · {{ job.company }}</div>
             <div class="admin-card-meta">
-              <span>📍 {{ job.city }}</span>
-              <span>📋 {{ typeLabels[job.type] }}</span>
-              <span>👤 {{ job.profiles?.username || '匿名' }}</span>
-              <span>💰 {{ job.salary || '面议' }}</span>
+              <span>{{ job.city }}</span>
+              <span>{{ typeLabels[job.type] }}</span>
+              <span>{{ job.profiles?.username || '匿名' }}</span>
+              <span>{{ job.salary || '面议' }}</span>
             </div>
           </div>
         </div>
-        <div v-if="job.notes" style="font-size:13px;color:var(--gray-500);margin-bottom:8px">📝 {{ job.notes }}</div>
+        <div v-if="job.notes" style="font-size:13px;color:var(--gray-500);margin-bottom:8px">{{ job.notes }}</div>
         <div class="admin-actions">
-          <button class="btn btn-success btn-sm" @click="doApprove(job.id)">✅ 通过</button>
-          <button class="btn btn-warning btn-sm" @click="startReject(job.id)">❌ 拒绝</button>
-          <button class="btn btn-outline btn-sm" @click="startEdit(job)">✏️ 编辑</button>
+          <button class="btn btn-success btn-sm" @click="doApprove(job.id)">通过</button>
+          <button class="btn btn-warning btn-sm" @click="startReject(job.id)">拒绝</button>
+          <button class="btn btn-outline btn-sm" @click="startEdit(job)">编辑</button>
         </div>
         <div v-if="editing === job.id" class="admin-edit-form">
           <div class="form-row" style="margin-bottom:8px">
@@ -127,15 +127,15 @@ onMounted(load)
           <div>
             <div class="admin-card-title">{{ job.title }} · {{ job.company }}</div>
             <div class="admin-card-meta">
-              <span>📍 {{ job.city }}</span>
-              <span>📋 {{ typeLabels[job.type] }}</span>
-              <span>🎯 {{ job.friendly_label ? '大专友好' : '无' }}</span>
+              <span>{{ job.city }}</span>
+              <span>{{ typeLabels[job.type] }}</span>
+              <span>{{ job.friendly_label ? '大专友好' : '无' }}</span>
             </div>
           </div>
         </div>
         <div class="admin-actions">
           <button class="btn btn-outline btn-sm" @click="startEdit(job)">✏️ 编辑</button>
-          <button class="btn btn-danger btn-sm" @click="doDelete(job.id)">🗑️ 删除</button>
+          <button class="btn btn-danger btn-sm" @click="doDelete(job.id)">删除</button>
         </div>
         <div v-if="editing === job.id" class="admin-edit-form">
           <div class="form-row" style="margin-bottom:8px">
@@ -158,13 +158,13 @@ onMounted(load)
           <div>
             <div class="admin-card-title">{{ job.title }} · {{ job.company }}</div>
             <div class="admin-card-meta">
-              <span>📍 {{ job.city }}</span>
-              <span v-if="job.rejected_reason">❌ {{ job.rejected_reason }}</span>
+              <span>{{ job.city }}</span>
+              <span v-if="job.rejected_reason">{{ job.rejected_reason }}</span>
             </div>
           </div>
         </div>
         <div class="admin-actions">
-          <button class="btn btn-success btn-sm" @click="doApprove(job.id)">✅ 恢复通过</button>
+          <button class="btn btn-success btn-sm" @click="doApprove(job.id)">恢复通过</button>
           <button class="btn btn-danger btn-sm" @click="doDelete(job.id)">🗑️ 删除</button>
         </div>
       </div>

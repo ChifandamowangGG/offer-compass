@@ -10,7 +10,7 @@ defineProps({ total: Number, friendly: Number })
     <div class="stat-item">
       <span class="stat-value">{{ friendly }}</span>
       <span class="stat-label">个</span>
-      <span class="stat-badge">🎯 大专友好</span>
+      <span class="stat-badge">大专友好</span>
     </div>
     <div style="flex:1"></div>
     <div style="font-size:13px;color:var(--gray-400)">

@@ -65,7 +65,7 @@ async function onLogin(userData) {
   const r = await getUserRole(userData.id)
   role.value = r
   await loadBookmarks()
-  toast('登录成功 🎉')
+  toast('登录成功 ')
 }
 
 async function onLogout() {

@@ -35,12 +35,12 @@ async function handleSubmit() {
 <template>
   <div class="submit-form">
     <template v-if="success">
-      <h2>✅ 提交成功！</h2>
+      <h2>提交成功！</h2>
       <p class="subtitle">岗位已进入审核队列，管理员审核通过后就会展示在列表中。</p>
       <button class="btn btn-primary" @click="$emit('cancel')">返回浏览</button>
     </template>
     <template v-else>
-      <h2>📮 投稿实习岗位</h2>
+      <h2>投稿实习岗位</h2>
       <p class="subtitle">你知道的实习机会，分享给更多同学</p>
       <form @submit.prevent="handleSubmit">
         <div class="form-row">
@@ -94,7 +94,7 @@ async function handleSubmit() {
         </div>
         <div class="form-checkbox">
           <input v-model="form.friendly_label" type="checkbox" id="friendly" />
-          <label for="friendly">🎯 这个岗位明确接受大专学历</label>
+          <label for="friendly">这个岗位明确接受大专学历</label>
         </div>
         <div class="form-group">
           <label>补充说明</label>

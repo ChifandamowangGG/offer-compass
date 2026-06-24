@@ -82,12 +82,12 @@ const statusLabels = { wish: '想投', applied: '已投递', interviewing: '面�
       <span class="tag tag-city">{{ job.city }}</span>
       <span class="tag tag-type">{{ typeLabels[job.type] || job.type }}</span>
       <span class="tag">{{ job.education }}</span>
-      <span v-if="job.friendly_label" class="tag tag-friendly">🎯 大专友好</span>
+      <span v-if="job.friendly_label" class="tag tag-friendly">大专友好</span>
       <span v-if="job.deadline" class="tag tag-deadline">{{ daysLeft }}</span>
     </div>
     <div v-if="job.notes" class="job-card-notes">{{ job.notes }}</div>
     <div class="job-card-actions">
-      <a :href="job.link" target="_blank" class="btn btn-primary btn-sm" rel="noopener">去投递</a>
+      <a :href="job.link" target="_blank" class="btn btn-primary btn-sm" rel="noopener">申请投递</a>
       <span v-if="isBookmarked && bm" style="flex:1"></span>
       <select v-if="isBookmarked && bm" class="app-status-select" :value="bm.application_status" @change="changeStatus" :disabled="saving">
         <option v-for="(label, key) in statusLabels" :key="key" :value="key">{{ label }}</option>
@@ -96,8 +96,8 @@ const statusLabels = { wish: '想投', applied: '已投递', interviewing: '面�
 
     <!-- Admin actions -->
     <div v-if="isAdmin" class="admin-actions" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--gray-200);display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-outline btn-sm" @click="startEdit">✏️ 编辑</button>
-      <button class="btn btn-danger btn-sm" @click="confirmDelete">🗑️ 删除</button>
+      <button class="btn btn-outline btn-sm" @click="startEdit">编辑</button>
+      <button class="btn btn-danger btn-sm" @click="confirmDelete">删除</button>
     </div>
   </div>
 
@@ -128,7 +128,7 @@ const statusLabels = { wish: '想投', applied: '已投递', interviewing: '面�
         <label :for="'ef-' + job.id">🎯 大专友好</label>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-primary btn-sm" @click="saveEdit">💾 保存</button>
+        <button class="btn btn-primary btn-sm" @click="saveEdit">保存</button>
         <button class="btn btn-outline btn-sm" @click="cancelEdit">取消</button>
       </div>
     </div>
