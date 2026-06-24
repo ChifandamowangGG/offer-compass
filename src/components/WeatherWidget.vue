@@ -34,19 +34,16 @@ const bgStyle = computed(() => {
   if (!weather.value) {
     return { background: 'linear-gradient(135deg, #667eea, #764ba2)' }
   }
-  const code = weather.value.weatherCode || 0
-  const isNight = !weather.value.weatherDesc?.[0]?.value?.includes('晴') && code > 8
-  let key = 'default'
-  if (code <= 1) key = 'sunny'
-  else if (code <= 3) key = isNight ? 'night' : 'cloudy'
-  else if (code <= 5) key = 'foggy'
-  else if (code <= 6) key = 'rainy'
-  else if (code <= 8) key = 'rainy'
-  // Snow codes from wttr.in
   const desc = (weather.value.weatherDesc?.[0]?.value || '').toLowerCase()
-  if (desc.includes('雪') || desc.includes('snow')) key = 'snowy'
-  if (desc.includes('阴')) key = 'overcast'
-  if (desc.includes('晴')) key = 'sunny'
+  let key = 'default'
+  if (desc.includes('sunny') || desc.includes('clear')) key = 'sunny'
+  else if (desc.includes('partly cloudy')) key = 'cloudy'
+  else if (desc.includes('overcast')) key = 'overcast'
+  else if (desc.includes('cloudy')) key = 'cloudy'
+  else if (desc.includes('fog') || desc.includes('mist') || desc.includes('haze')) key = 'foggy'
+  else if (desc.includes('rain') || desc.includes('drizzle') || desc.includes('shower') || desc.includes('thunder')) key = 'rainy'
+  else if (desc.includes('snow') || desc.includes('blizzard') || desc.includes('sleet')) key = 'snowy'
+  else if (desc.includes('thunder')) key = 'rainy'
 
   const url = weatherBgs[key] || weatherBgs.default
   return {
@@ -73,12 +70,16 @@ async function fetchWeather() {
   } finally { loading.value = false }
 }
 
-function weatherLabel(code) {
-  if (!code) return '-'
-  if (code <= 1) return '晴'  // 晴
-  if (code <= 3) return '多云'  // 多云
-  if (code <= 5) return '雾'  // 雾
-  if (code <= 8) return '雨'  // 雨
+function weatherLabel(desc) {
+  const d = (desc || '').toLowerCase()
+  if (d.includes('sunny') || d.includes('clear')) return '晴'
+  if (d.includes('partly cloudy')) return '多云'
+  if (d.includes('overcast')) return '阴'
+  if (d.includes('cloudy')) return '多云'
+  if (d.includes('mist') || d.includes('fog') || d.includes('haze')) return '雾'
+  if (d.includes('rain') || d.includes('drizzle') || d.includes('shower')) return '雨'
+  if (d.includes('snow') || d.includes('blizzard') || d.includes('sleet')) return '雪'
+  if (d.includes('thunder') || d.includes('storm')) return '雷雨'
   return '-'
 }
 
@@ -86,52 +87,52 @@ watch(() => props.city, fetchWeather, { immediate: true })
 </script>
 
 <template>
-  <div v-if="loading && !weather" class="weather-card" style="background: linear-gradient(135deg, #667eea, #764ba2); opacity:0.5">
+  <div v-if="loading && !weather" class="weather-card" style="background:linear-gradient(135deg,#667eea,#764ba2);opacity:.5">
     <div class="weather-loading">加载中</div>
   </div>
   <div v-else-if="error && !weather" class="weather-card weather-card-error">
     <span class="weather-error-text">{{ error }}</span>
   </div>
   <div v-else-if="weather" class="weather-card" :style="bgStyle">
-    <div class="weather-left">
+    <div class="weather-top">
       <div class="weather-city-label">{{ city === 'all' ? '武汉' : city }}</div>
+      <span class="weather-badge">{{ weatherLabel(weather.weatherDesc?.[0]?.value) }}</span>
+    </div>
+    <div class="weather-body">
       <div class="weather-temp">{{ weather.temp_C }}<span class="weather-temp-unit">&deg;C</span></div>
       <div class="weather-desc">{{ weather.weatherDesc?.[0]?.value || '-' }}</div>
+      <div class="weather-divider"></div>
+      <div class="weather-details">
+        <div class="weather-detail-item">
+          <span class="wd-label">体感</span>
+          <span class="wd-value">{{ weather.FeelsLikeC || weather.temp_C }}&deg;C</span>
+        </div>
+        <div class="weather-detail-item">
+          <span class="wd-label">湿度</span>
+          <span class="wd-value">{{ weather.humidity }}%</span>
+        </div>
+        <div class="weather-detail-item">
+          <span class="wd-label">风速</span>
+          <span class="wd-value">{{ weather.windspeedKmph }}km/h</span>
+        </div>
+        <div v-if="weather.uvIndex" class="weather-detail-item">
+          <span class="wd-label">UV</span>
+          <span class="wd-value">{{ weather.uvIndex }}</span>
+        </div>
+        <div v-if="weather.visibility" class="weather-detail-item">
+          <span class="wd-label">能见度</span>
+          <span class="wd-value">{{ (weather.visibility / 10).toFixed(1) }}km</span>
+        </div>
+      </div>
     </div>
-    <div class="weather-divider"></div>
-    <div class="weather-right">
-      <div class="weather-detail-row">
-        <span class="weather-detail-label">体感</span>
-        <span class="weather-detail-value">{{ weather.FeelsLikeC || weather.temp_C }}&deg;C</span>
-      </div>
-      <div class="weather-detail-row">
-        <span class="weather-detail-label">湿度</span>
-        <span class="weather-detail-value">{{ weather.humidity }}%</span>
-      </div>
-      <div class="weather-detail-row">
-        <span class="weather-detail-label">风速</span>
-        <span class="weather-detail-value">{{ weather.windspeedKmph }}km/h</span>
-      </div>
-      <div v-if="weather.uvIndex" class="weather-detail-row">
-        <span class="weather-detail-label">UV</span>
-        <span class="weather-detail-value">{{ weather.uvIndex }}</span>
-      </div>
-      <div v-if="weather.visibility" class="weather-detail-row">
-        <span class="weather-detail-label">能见度</span>
-        <span class="weather-detail-value">{{ (weather.visibility / 10).toFixed(1) }}km</span>
-      </div>
+    <div class="weather-footer">
+      <button class="weather-refresh" @click="fetchWeather">↻ 刷新</button>
     </div>
-    <div class="weather-badge">{{ weatherLabel(weather.weatherCode) }}</div>
-    <button class="weather-refresh" @click="fetchWeather" title="刷新">&#8635;</button>
   </div>
 </template>
 
 <style scoped>
 .weather-card {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 18px 24px;
   border-radius: 12px;
   color: white;
   margin-bottom: 16px;
@@ -139,28 +140,31 @@ watch(() => props.city, fetchWeather, { immediate: true })
   overflow: hidden;
   min-height: 100px;
   text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
 }
 .weather-card-error {
   background: var(--bg-card) !important;
   border: 1px solid var(--border);
   color: var(--text-secondary);
   text-shadow: none;
+  min-height: auto;
+  padding: 16px 20px;
 }
 .weather-loading {
   width: 100%;
   text-align: center;
+  padding: 40px 20px;
   font-size: 14px;
   opacity: 0.7;
 }
-.weather-error-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-.weather-left {
+.weather-error-text { font-size: 13px; color: var(--text-secondary); }
+
+.weather-top {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 120px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
 }
 .weather-city-label {
   font-size: 15px;
@@ -168,11 +172,28 @@ watch(() => props.city, fetchWeather, { immediate: true })
   opacity: 0.95;
   letter-spacing: 0.5px;
 }
+.weather-badge {
+  font-size: 11px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.2);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.weather-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  flex: 1;
+}
 .weather-temp {
-  font-size: 42px;
+  font-size: 44px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -1px;
+  white-space: nowrap;
 }
 .weather-temp-unit {
   font-size: 20px;
@@ -184,61 +205,53 @@ watch(() => props.city, fetchWeather, { immediate: true })
 .weather-desc {
   font-size: 13px;
   opacity: 0.85;
-  margin-top: 2px;
+  white-space: nowrap;
 }
 .weather-divider {
   width: 1px;
-  height: 60px;
-  background: rgba(255,255,255,0.25);
+  height: 48px;
+  background: rgba(255,255,255,0.2);
   flex-shrink: 0;
 }
-.weather-right {
+.weather-details {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.weather-detail-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  flex: 1;
+  gap: 1px;
+  min-width: 48px;
 }
-.weather-detail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  line-height: 1.6;
-}
-.weather-detail-label {
-  opacity: 0.75;
-}
-.weather-detail-value {
-  font-weight: 500;
-}
-.weather-badge {
-  position: absolute;
-  top: 12px;
-  right: 40px;
+.wd-label {
   font-size: 11px;
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.2);
+  opacity: 0.7;
+}
+.wd-value {
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: 1px;
+}
+
+.weather-footer {
+  padding: 8px 20px 14px;
+  display: flex;
+  justify-content: flex-end;
 }
 .weather-refresh {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
   color: white;
-  font-size: 16px;
+  font-size: 12px;
   cursor: pointer;
-  opacity: 0.5;
-  padding: 4px 6px;
-  border-radius: 4px;
+  padding: 5px 14px;
+  border-radius: 999px;
   transition: var(--transition);
-  line-height: 1;
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.5px;
 }
 .weather-refresh:hover {
-  opacity: 1;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.4);
 }
 </style>
